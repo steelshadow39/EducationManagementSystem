@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbScoreMapper">
+
+    <resultMap type="TbScore" id="TbScoreResult">
+        <result property="studentId" column="Student_Id"/>
+        <result property="studentName" column="Student_Name"/>
+        <result property="courseName" column="Course_Name"/>
+        <result property="Score" column="Score"/>
+        <collection property="tbCourses" ofType="com.steel.school.domain.TbCourse">
+            <result property="majorId" column="Major_ID"/>
+            <result property="Grade" column="Grade"/>
+            <association property="tbMajor" javaType="TbMajor">
+                <result property="majorName" column="Major_Name"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <sql id="selectTbScoreVo">
+        select Student_Id, Student_Name, Course_Name, Score
+        from tb_score
+    </sql>
+
+    <select id="selectTbStudentScoreByStudentId" parameterType="String" resultMap="TbScoreResult">
+        select s.Course_Name, s.Score, tc.Major_ID, tm.Major_Name
+        from tb_score s
+                 left join tb_course tc on s.Course_Name = tc.Course_Name
+                 left join tb_major tm on tm.Major_ID = tc.Major_ID
+        where s.Student_Id = #{studentId}
+    </select>
+
+    <select id="selectTbScoreList" parameterType="TbScore" resultMap="TbScoreResult">
+        <include refid="selectTbScoreVo"/>
+        <where>
+            <if test="studentName != null  and studentName != ''">and Student_Name like concat('%', #{studentName},
+                '%')
+            </if>
+            <if test="studentId != null  and studentId != ''">and Student_Id =#{studentId}</if>
+            <if test="courseName != null and courseName != ''">and Course_Name like concat ('%', #{courseName},'%')</if>
+        </where>
+        order by Student_Id
+    </select>
+
+    <select id="selectTbScoreByStudentId" parameterType="String" resultMap="TbScoreResult">
+        <include refid="selectTbScoreVo"/>
+        where Student_Id = #{studentId}
+    </select>
+
+    <insert id="insertTbScore" parameterType="TbScore">
+        insert into tb_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">Student_Id,</if>
+            <if test="studentName != null and studentName != ''">Student_Name,</if>
+            <if test="courseName != null">Course_Name,</if>
+            <if test="Score != null">Score,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="studentName != null and studentName != ''">#{studentName},</if>
+            <if test="courseName != null">#{courseName},</if>
+            <if test="Score != null">#{Score},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTbScore" parameterType="TbScore">
+        update tb_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentName != null and studentName != ''">Student_Name = #{studentName},</if>
+            <if test="courseName != null">Course_Name = #{courseName},</if>
+            <if test="Score != null">Score = #{Score},</if>
+        </trim>
+        where Student_Id = #{studentId}
+    </update>
+
+    <delete id="deleteTbScoreByStudentId" parameterType="String">
+        delete
+        from tb_score
+        where Student_Id = #{studentId}
+    </delete>
+
+    <delete id="deleteTbScoreByStudentIds" parameterType="String">
+        delete from tb_score where Student_Id in
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+</mapper>

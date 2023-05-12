@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbStudentMapper">
+
+    <resultMap type="TbStudent" id="TbStudentResult">
+        <result property="studentId" column="Student_Id"/>
+        <result property="studentName" column="Student_Name"/>
+        <result property="studentSex" column="Student_Sex"/>
+        <result property="Grade" column="Grade"/>
+        <result property="Classe" column="Classe"/>
+        <result property="majorId" column="Major_ID"/>
+        <result property="majorName" column="Major_Name"/>
+        <result property="departmentId" column="Department_ID"/>
+        <result property="departmentName" column="Department_Name"/>
+    </resultMap>
+    <resultMap type="TbMajor" id="TbMajorResult">
+        <result property="majorId" column="Major_ID"/>
+        <result property="majorName" column="Major_Name"/>
+        <result property="departmentId" column="Department_ID"/>
+    </resultMap>
+    <resultMap type="TbScore" id="TbScoreResult">
+        <result property="studentId" column="Student_Id"/>
+        <result property="studentName" column="Student_Name"/>
+        <result property="courseName" column="Course_Name"/>
+        <result property="Score" column="Score"/>
+    </resultMap>
+
+
+    <sql id="selectTbStudentVo">
+        select Student_Id,
+               Student_Name,
+               Student_Sex,
+               Grade,
+               Classe,
+               Major_ID,
+               Major_Name,
+               Department_ID,
+               Department_Name
+        from tb_student
+    </sql>
+    <select id="selectTbStudentScoreByStudentId" parameterType="String" resultMap="TbStudentResult">
+        select s.Course_Name, s.Score, m.Major_ID, m.Major_Name
+        from tb_score s
+                 left join tb_course tc on s.Course_Name = tc.Course_Name
+                 left join tb_major m on tc.Major_ID = m.Major_ID
+        where s.Student_Id = #{studentId}
+    </select>
+
+    <select id="selectTbStudentList" parameterType="TbStudent" resultMap="TbStudentResult">
+        <include refid="selectTbStudentVo"/>
+        <where>
+            <if test="studentName != null  and studentName != ''">and Student_Name like concat('%', #{studentName},
+                '%')
+            </if>
+            <if test="studentSex != null  and studentSex != ''">and Student_Sex = #{studentSex}</if>
+            <if test="Grade != null ">and Grade = #{Grade}</if>
+            <if test="Classe != null ">and Classe = #{Classe}</if>
+            <if test="majorId != null  and majorId != ''">and Major_ID = #{majorId}</if>
+            <if test="majorName != null  and majorName != ''">and Major_Name like concat('%', #{majorName}, '%')</if>
+            <if test="departmentId != null  and departmentId != ''">and Department_ID = #{departmentId}</if>
+            <if test="departmentName != null  and departmentName != ''">and Department_Name like concat('%',
+                #{departmentName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectTbStudentByStudentId" parameterType="String" resultMap="TbStudentResult">
+        <include refid="selectTbStudentVo"/>
+        where Student_Id = #{studentId}
+    </select>
+
+    <insert id="insertTbStudent" parameterType="TbStudent">
+        insert into tb_student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">Student_Id,</if>
+            <if test="studentName != null and studentName != ''">Student_Name,</if>
+            <if test="studentSex != null">Student_Sex,</if>
+            <if test="Grade != null">Grade,</if>
+            <if test="Classe != null">Classe,</if>
+            <if test="majorId != null and majorId != ''">Major_ID,</if>
+            <if test="majorName != null and majorName != ''">Major_Name,</if>
+            <if test="departmentId != null and departmentId != ''">Department_ID,</if>
+            <if test="departmentName != null and departmentName != ''">Department_Name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="studentId != null">#{studentId},</if>
+            <if test="studentName != null and studentName != ''">#{studentName},</if>
+            <if test="studentSex != null">#{studentSex},</if>
+            <if test="Grade != null">#{Grade},</if>
+            <if test="Classe != null">#{Classe},</if>
+            <if test="majorId != null and majorId != ''">#{majorId},</if>
+            <if test="majorName != null and majorName != ''">#{majorName},</if>
+            <if test="departmentId != null and departmentId != ''">#{departmentId},</if>
+            <if test="departmentName != null and departmentName != ''">#{departmentName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTbStudent" parameterType="TbStudent">
+        update tb_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="studentName != null and studentName != ''">Student_Name = #{studentName},</if>
+            <if test="studentSex != null">Student_Sex = #{studentSex},</if>
+            <if test="Grade != null">Grade = #{Grade},</if>
+            <if test="Classe != null">Classe = #{Classe},</if>
+            <if test="majorId != null and majorId != ''">Major_ID = #{majorId},</if>
+            <if test="majorName != null and majorName != ''">Major_Name = #{majorName},</if>
+            <if test="departmentId != null and departmentId != ''">Department_ID = #{departmentId},</if>
+            <if test="departmentName != null and departmentName != ''">Department_Name = #{departmentName},</if>
+        </trim>
+        where Student_Id = #{studentId}
+    </update>
+
+    <delete id="deleteTbStudentByStudentId" parameterType="String">
+        delete
+        from tb_student
+        where Student_Id = #{studentId}
+    </delete>
+
+    <delete id="deleteTbStudentByStudentIds" parameterType="String">
+        delete from tb_student where Student_Id in
+        <foreach item="studentId" collection="array" open="(" separator="," close=")">
+            #{studentId}
+        </foreach>
+    </delete>
+</mapper>

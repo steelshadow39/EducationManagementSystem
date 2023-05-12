@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbTeacherMapper">
+
+    <resultMap type="TbTeacher" id="TbTeacherResult">
+        <result property="id" column="id"/>
+        <result property="teacherNo" column="teacher_no"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="cellphone" column="cellphone"/>
+        <result property="sex" column="sex"/>
+        <result property="departmentId" column="department_id"/>
+        <result property="city" column="city"/>
+        <result property="county" column="county"/>
+        <result property="courseName" column="course_name"/>
+    </resultMap>
+
+    <sql id="selectTbTeacherVo">
+        select id,
+               teacher_no,
+               teacher_name,
+               cellphone,
+               sex,
+               department_id,
+               city,
+               county,
+               course_name
+        from tb_teacher
+    </sql>
+
+    <select id="selectTbTeacherList" parameterType="TbTeacher" resultMap="TbTeacherResult">
+        <include refid="selectTbTeacherVo"/>
+        <where>
+            <if test="teacherNo != null  and teacherNo != ''">and teacher_no = #{teacherNo}</if>
+            <if test="teacherName != null  and teacherName != ''">and teacher_name like concat('%', #{teacherName},
+                '%')
+            </if>
+            <if test="cellphone != null  and cellphone != ''">and cellphone = #{cellphone}</if>
+            <if test="sex != null  and sex != ''">and sex = #{sex}</if>
+            <if test="departmentId != null ">and department_id = #{departmentId}</if>
+            <if test="city != null  and city != ''">and city = #{city}</if>
+            <if test="county != null  and county != ''">and county = #{county}</if>
+            <if test="courseName != null  and courseName != ''">and course_name like concat('%',#{courseName},'%')</if>
+        </where>
+    </select>
+
+    <select id="selectTbTeacherById" parameterType="Long" resultMap="TbTeacherResult">
+        <include refid="selectTbTeacherVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTbTeacher" parameterType="TbTeacher" useGeneratedKeys="true" keyProperty="id">
+        insert into tb_teacher
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="teacherNo != null">teacher_no,</if>
+            <if test="teacherName != null">teacher_name,</if>
+            <if test="cellphone != null">cellphone,</if>
+            <if test="sex != null">sex,</if>
+            <if test="departmentId != null">department_id,</if>
+            <if test="city != null">city,</if>
+            <if test="county != null">county,</if>
+            <if test="courseName != null">course_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="teacherNo != null">#{teacherNo},</if>
+            <if test="teacherName != null">#{teacherName},</if>
+            <if test="cellphone != null">#{cellphone},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="departmentId != null">#{departmentId},</if>
+            <if test="city != null">#{city},</if>
+            <if test="county != null">#{county},</if>
+            <if test="courseName != null">#{courseName},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTbTeacher" parameterType="TbTeacher">
+        update tb_teacher
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="teacherNo != null">teacher_no = #{teacherNo},</if>
+            <if test="teacherName != null">teacher_name = #{teacherName},</if>
+            <if test="cellphone != null">cellphone = #{cellphone},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="departmentId != null">department_id = #{departmentId},</if>
+            <if test="city != null">city = #{cNity},</if>
+            <if test="county != null">county = #{county},</if>
+            <if test="courseName != null">cours_name = #{courseName},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTbTeacherById" parameterType="Long">
+        delete
+        from tb_teacher
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTbTeacherByIds" parameterType="String">
+        delete from tb_teacher where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

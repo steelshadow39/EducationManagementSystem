@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbMajorMapper">
+    
+    <resultMap type="TbMajor" id="TbMajorResult">
+        <result property="majorId"    column="Major_ID"    />
+        <result property="majorName"    column="Major_Name"    />
+        <result property="departmentId"    column="Department_ID"    />
+    </resultMap>
+
+    <sql id="selectTbMajorVo">
+        select Major_ID, Major_Name, Department_ID from tb_major
+    </sql>
+
+    <select id="selectTbMajorList" parameterType="TbMajor" resultMap="TbMajorResult">
+        <include refid="selectTbMajorVo"/>
+        <where>  
+            <if test="majorName != null  and majorName != ''"> and Major_Name like concat('%', #{majorName}, '%')</if>
+            <if test="departmentId != null  and departmentId != ''"> and Department_ID = #{departmentId}</if>
+        </where>
+    </select>
+    
+    <select id="selectTbMajorByMajorId" parameterType="String" resultMap="TbMajorResult">
+        <include refid="selectTbMajorVo"/>
+        where Major_ID = #{majorId}
+    </select>
+        
+    <insert id="insertTbMajor" parameterType="TbMajor">
+        insert into tb_major
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="majorId != null">Major_ID,</if>
+            <if test="majorName != null and majorName != ''">Major_Name,</if>
+            <if test="departmentId != null and departmentId != ''">Department_ID,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="majorId != null">#{majorId},</if>
+            <if test="majorName != null and majorName != ''">#{majorName},</if>
+            <if test="departmentId != null and departmentId != ''">#{departmentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbMajor" parameterType="TbMajor">
+        update tb_major
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="majorName != null and majorName != ''">Major_Name = #{majorName},</if>
+            <if test="departmentId != null and departmentId != ''">Department_ID = #{departmentId},</if>
+        </trim>
+        where Major_ID = #{majorId}
+    </update>
+
+    <delete id="deleteTbMajorByMajorId" parameterType="String">
+        delete from tb_major where Major_ID = #{majorId}
+    </delete>
+
+    <delete id="deleteTbMajorByMajorIds" parameterType="String">
+        delete from tb_major where Major_ID in 
+        <foreach item="majorId" collection="array" open="(" separator="," close=")">
+            #{majorId}
+        </foreach>
+    </delete>
+</mapper>

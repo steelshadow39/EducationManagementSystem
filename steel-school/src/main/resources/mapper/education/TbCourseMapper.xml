@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbCourseMapper">
+    
+    <resultMap type="TbCourse" id="TbCourseResult">
+        <result property="courseName"    column="Course_Name"    />
+        <result property="majorId"    column="Major_ID"    />
+        <result property="Grade"    column="Grade"    />
+    </resultMap>
+
+    <sql id="selectTbCourseVo">
+        select Course_Name, Major_ID, Grade from tb_course
+    </sql>
+
+    <select id="selectTbCourseList" parameterType="TbCourse" resultMap="TbCourseResult">
+        <include refid="selectTbCourseVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectTbCourseByCourseName" parameterType="String" resultMap="TbCourseResult">
+        <include refid="selectTbCourseVo"/>
+        where Course_Name = #{courseName}
+    </select>
+        
+    <insert id="insertTbCourse" parameterType="TbCourse">
+        insert into tb_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="courseName != null">Course_Name,</if>
+            <if test="majorId != null">Major_ID,</if>
+            <if test="Grade != null">Grade,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="courseName != null">#{courseName},</if>
+            <if test="majorId != null">#{majorId},</if>
+            <if test="Grade != null">#{Grade},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbCourse" parameterType="TbCourse">
+        update tb_course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="majorId != null">Major_ID = #{majorId},</if>
+            <if test="Grade != null">Grade = #{Grade},</if>
+        </trim>
+        where Course_Name = #{courseName}
+    </update>
+
+    <delete id="deleteTbCourseByCourseName" parameterType="String">
+        delete from tb_course where Course_Name = #{courseName}
+    </delete>
+
+    <delete id="deleteTbCourseByCourseNames" parameterType="String">
+        delete from tb_course where Course_Name in 
+        <foreach item="courseName" collection="array" open="(" separator="," close=")">
+            #{courseName}
+        </foreach>
+    </delete>
+</mapper>

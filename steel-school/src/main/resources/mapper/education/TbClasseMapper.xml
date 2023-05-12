@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.steel.school.mapper.TbClasseMapper">
+    
+    <resultMap type="TbClasse" id="TbClasseResult">
+        <result property="Classe"    column="Classe"    />
+        <result property="Grade"    column="Grade"    />
+        <result property="majorId"    column="Major_ID"    />
+    </resultMap>
+
+    <sql id="selectTbClasseVo">
+        select Classe, Grade, Major_ID from tb_classe
+    </sql>
+
+    <select id="selectTbClasseList" parameterType="TbClasse" resultMap="TbClasseResult">
+        <include refid="selectTbClasseVo"/>
+        <where>  
+        </where>
+    </select>
+    
+    <select id="selectTbClasseByClasse" parameterType="Long" resultMap="TbClasseResult">
+        <include refid="selectTbClasseVo"/>
+        where Classe = #{Classe}
+    </select>
+        
+    <insert id="insertTbClasse" parameterType="TbClasse">
+        insert into tb_classe
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="Classe != null">Classe,</if>
+            <if test="Grade != null">Grade,</if>
+            <if test="majorId != null">Major_ID,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="Classe != null">#{Classe},</if>
+            <if test="Grade != null">#{Grade},</if>
+            <if test="majorId != null">#{majorId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTbClasse" parameterType="TbClasse">
+        update tb_classe
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="Grade != null">Grade = #{Grade},</if>
+            <if test="majorId != null">Major_ID = #{majorId},</if>
+        </trim>
+        where Classe = #{Classe}
+    </update>
+
+    <delete id="deleteTbClasseByClasse" parameterType="Long">
+        delete from tb_classe where Classe = #{Classe}
+    </delete>
+
+    <delete id="deleteTbClasseByClasses" parameterType="String">
+        delete from tb_classe where Classe in 
+        <foreach item="Classe" collection="array" open="(" separator="," close=")">
+            #{Classe}
+        </foreach>
+    </delete>
+</mapper>
