@@ -112,6 +112,7 @@ public class SysLoginService
     {
         String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.nvl(uuid, "");
         String captcha = redisCache.getCacheObject(verifyKey);
+        //获取完以后及时把缓存删除
         redisCache.deleteObject(verifyKey);
         if (captcha == null)
         {
