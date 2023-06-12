@@ -51,3 +51,4 @@ nbdist/
 LICENSE
 ry.bat
 ry.sh
+.gitignore
