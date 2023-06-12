@@ -1,4 +1,1 @@
-
-hello,123<br>
-here is 1_test<br>
-merge 1_test to test<br>
+在ruoyi的基础上，基于Java springboot框架开发的教育数据管理平台，实现基本业务功能，配置https实现加密通信，使用docker部署apisix网关，Prometheus监控API数据。
